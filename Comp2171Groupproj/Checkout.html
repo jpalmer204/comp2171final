@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        .checkout-container {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 10px;
+            width: 400px;
+            margin: 100px auto;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="checkout-container">
+
+    <h2>Checkout</h2>
+
+    <form id="checkoutForm">
+
+        <input type="text" id="name" placeholder="Full Name" required>
+
+        <input type="email" id="email" placeholder="Email" required>
+
+        <input type="text" id="address" placeholder="Address" required>
+
+        <select id="paymentMethod" required>
+            <option value="">Select Payment Method</option>
+            <option value="Cash">Cash on Delivery</option>
+            <option value="Card">Card</option>
+        </select>
+
+        <button type="submit">Place Order</button>
+
+    </form>
+
+    <div id="confirmationMessage"></div>
+
+</div>
+
+<script>
+    document.getElementById("checkoutForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        document.getElementById("confirmationMessage").innerText =
+            "Order placed successfully!";
+             setTimeout(() => {
+                window.location.href = "index.html";
+                }, 1500);
+    });
+
+    document.getElementById("checkoutForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value;
+    const email = document.getElementById("email").value;
+    const address = document.getElementById("address").value;
+    const payment = document.getElementById("paymentMethod").value;
+
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+
+    const order = {
+        name,
+        email,
+        address,
+        payment,
+        items: cart,
+        date: new Date().toLocaleString()
+    };
+
+ 
+    let orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+
+    orders.push(order);
+
+    localStorage.setItem("orders", JSON.stringify(orders));
+
+    document.getElementById("confirmationMessage").innerText =
+        "Order placed successfully!";
+
+
+    localStorage.removeItem("cart");
+
+    setTimeout(() => {
+        window.location.href = "index.html";
+    }, 2000);
+});
+</script>
+
+</body>
+</html>

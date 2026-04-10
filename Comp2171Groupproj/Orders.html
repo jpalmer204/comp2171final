@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Orders</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="dashboard">
+
+    <button onclick="goBack()">← Back</button>
+
+    <h2>📦 Purchases</h2>
+
+    <div id="ordersContainer"></div>
+
+</div>
+
+<script>
+function loadOrders() {
+    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+    const container = document.getElementById("ordersContainer");
+
+    container.innerHTML = "";
+
+    if (orders.length === 0) {
+        container.innerHTML = "<p>No purchases yet.</p>";
+        return;
+    }
+
+    orders.forEach(order => {
+        let itemsHTML = "";
+
+        order.items.forEach(item => {
+            itemsHTML += `
+                <p>${item.name} (x${item.qty}) - $${item.price}</p>
+            `;
+        });
+
+        container.innerHTML += `
+            <div class="card">
+                <h3>${order.name}</h3>
+                <p>${order.email}</p>
+                <p>${order.address}</p>
+                <p>Payment: ${order.payment}</p>
+                <p>Date: ${order.date}</p>
+                <hr>
+                ${itemsHTML}
+            </div>
+        `;
+    });
+}
+
+function goBack() {
+    window.location.href = "index.html";
+}
+
+
+window.onload = function () {
+    const user = localStorage.getItem("loggedInUser");
+};
+window.onload = function () {
+    let orders = JSON.parse(localStorage.getItem("orders"));
+
+    if (!orders) {
+        orders = [
+            {
+                name: "Demo User",
+                email: "demo@email.com",
+                address: "Test Address",
+                payment: "Cash",
+                date: "2026-04-10",
+                items: [
+                    { name: "Dashcam A", price: 120, qty: 1 }
+                ]
+            }
+        ];
+
+        localStorage.setItem("orders", JSON.stringify(orders));
+    }
+
+    loadOrders();
+};
+</script>
+
+</body>
+</html>

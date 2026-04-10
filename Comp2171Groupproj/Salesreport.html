@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sales Report</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .header {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #334155;
+            text-align: left;
+        }
+
+        th {
+            background: #1e293b;
+        }
+
+        .btn {
+            background: #38bdf8;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: black;
+        }
+
+        .btn:hover {
+            background: #0ea5e9;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h2>📊 Sales Report Dashboard</h2>
+        <button class="btn" onclick="goBack()">Back</button>
+    </div>
+
+    <div class="stats">
+        <div class="card">
+            <h3 id="totalOrders">0</h3>
+            <p>Total Orders</p>
+        </div>
+
+        <div class="card">
+            <h3 id="totalItems">0</h3>
+            <p>Items Sold</p>
+        </div>
+
+        <div class="card">
+            <h3 id="totalRevenue">$0</h3>
+            <p>Total Revenue</p>
+        </div>
+    </div>
+
+    <h3>📦 Order Breakdown</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Payment</th>
+                <th>Total</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+
+        <tbody id="reportTable"></tbody>
+    </table>
+
+</div>
+
+<script>
+function loadReport() {
+
+    // 🔥 SIMULATED DATA (NO CHECKOUT NEEDED)
+    const orders = [
+        {
+            name: "John Brown",
+            payment: "Cash",
+            date: "2026-04-10",
+            items: [
+                { name: "Dashcam A", price: 120, qty: 1 },
+                { name: "Dashcam B", price: 180, qty: 2 }
+            ]
+        },
+        {
+            name: "Sarah Lee",
+            payment: "Card",
+            date: "2026-04-09",
+            items: [
+                { name: "Dashcam C", price: 200, qty: 1 }
+            ]
+        },
+        {
+            name: "Michael Smith",
+            payment: "Cash",
+            date: "2026-04-08",
+            items: [
+                { name: "Dashcam A", price: 120, qty: 2 }
+            ]
+        }
+    ];
+
+    let totalOrders = orders.length;
+    let totalItems = 0;
+    let totalRevenue = 0;
+
+    const table = document.getElementById("reportTable");
+
+    orders.forEach(order => {
+
+        let orderTotal = 0;
+        let itemText = "";
+
+        order.items.forEach(item => {
+            const subtotal = item.price * item.qty;
+            orderTotal += subtotal;
+            totalItems += item.qty;
+
+            itemText += `${item.name} (x${item.qty})<br>`;
+        });
+
+        totalRevenue += orderTotal;
+
+        table.innerHTML += `
+            <tr>
+                <td>${order.name}</td>
+                <td>${itemText}</td>
+                <td>${order.payment}</td>
+                <td>$${orderTotal}</td>
+                <td>${order.date}</td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("totalOrders").innerText = totalOrders;
+    document.getElementById("totalItems").innerText = totalItems;
+    document.getElementById("totalRevenue").innerText = "$" + totalRevenue;
+}
+
+function goBack() {
+    window.location.href = "index.html";
+}
+
+window.onload = loadReport;
+</script>
+
+</body>
+</html>

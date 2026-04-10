@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Add Product</title>
+    <link rel="stylesheet" href="styles.css" />
+
+    <style>
+      .form-container {
+        background: #1e293b;
+        padding: 30px;
+        border-radius: 10px;
+        width: 300px;
+      }
+
+      .back-btn {
+        margin-bottom: 10px;
+        background: gray;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="form-container">
+      <button class="back-btn" onclick="goBack()">← Back</button>
+
+      <h2>Add Product</h2>
+
+      <input type="text" id="productName" placeholder="Product Name" />
+      <input type="number" id="productPrice" placeholder="Price" />
+      <input type="number" id="productStock" placeholder="Stock" />
+
+      <button onclick="addProduct()">Add Product</button>
+
+      <div id="message"></div>
+    </div>
+
+    <script src="Product.js"></script>
+    <script src="ProductService.js"></script>
+
+    <script>
+      const productService = new ProductService();
+
+      function addProduct() {
+        const name = document.getElementById("productName").value;
+        const price = document.getElementById("productPrice").value;
+        const stock = document.getElementById("productStock").value;
+
+        if (!name || !price || !stock) {
+          document.getElementById("message").innerText = "Fill all fields!";
+          return;
+        }
+
+        const product = new Product(name, price, stock);
+        productService.addProduct(product);
+
+        document.getElementById("message").innerText = "Product Added!";
+
+        // Clear fields
+        document.getElementById("productName").value = "";
+        document.getElementById("productPrice").value = "";
+        document.getElementById("productStock").value = "";
+      }
+
+      function goBack() {
+        window.location.href = "index.html";
+      }
+      window.onload = function () {
+        const user = localStorage.getItem("user");
+
+        if (!user) {
+          window.location.href = "index.html";
+        }
+      };
+    </script>
+  </body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Login System</title>
+    <link rel="stylesheet" href="styles.css" />
+
+    <style>
+      .hidden {
+        display: none;
+      }
+
+      .dashboard {
+        padding: 20px;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #1e293b;
+        padding: 15px;
+        border-radius: 10px;
+      }
+
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        margin-top: 20px;
+      }
+
+      .card {
+        background: #1e293b;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+      }
+
+      .logout-btn {
+        background: red;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- LOGIN VIEW -->
+    <div id="loginView" class="login-container">
+      <h2>UptownDeals Login System</h2>
+      <input type="text" id="username" placeholder="Enter Username" />
+      <input type="password" id="password" placeholder="Enter Password" />
+      <button onclick="login()">Login</button>
+      <p class="register-text">
+        <em>Don't have an account?</em>
+        <a href="#" onclick="showRegister()">Create a new account</a>
+      </p>
+      <div class="message" id="message"></div>
+    </div>
+
+    <div id="registerView" class="login-container hidden">
+    <h2>Create Account</h2>
+
+    <input type="text" id="newUsername" placeholder="Enter Username">
+    <input type="password" id="newPassword" placeholder="Enter Password">
+
+    <button onclick="register()">Register</button>
+
+    <p class="register-text">
+        <em>Already have an account?</em>
+        <a href="#" onclick="showLogin()">Login</a>
+    </p>
+
+    <div id="registerMessage"></div>
+</div>
+
+    <!-- DASHBOARD VIEW -->
+    <div id="dashboardView" class="dashboard hidden">
+      <div class="header">
+        <h2>Dashboard</h2>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+
+      <h3 id="welcomeText">Welcome 👋</h3>
+
+      <div class="cards">
+        <div class="card">
+          <h3>📦 Inventory</h3>
+          <button onclick="goToProducts()">Manage Products</button>
+        </div>
+
+        <div class="card">
+          <h3>🛒 Orders</h3>
+          <button onclick="goToOrders()">View Purchases</button>
+        </div>
+
+        <div class="card">
+          <h3>📊 Reports</h3>
+          <button onclick="goToReports()">View Sales Report</button>
+        </div>
+
+        <div class="card" id="viewCartBtn">
+          <h3>🛒 Cart</h3>
+          <p>View cart items</p>
+        </div>
+      </div>
+
+      <section id="cartSection" class="hidden">
+        <h2>Cart</h2>
+        <div id="cartContainer"></div>
+        <p id="cartTotal">Total: $0</p>
+        <button id="checkoutBtn">Checkout</button>
+      </section>
+
+      <section id="checkoutSection" class="hidden">
+        <h2>Checkout</h2>
+
+        <form id="checkoutForm">
+          <input type="text" id="name" placeholder="Full Name" required />
+          <input type="email" id="email" placeholder="Email" required />
+          <input type="text" id="address" placeholder="Address" required />
+
+          <select id="paymentMethod" required>
+            <option value="">Select Payment Method</option>
+            <option value="Cash">Cash</option>
+            <option value="Card">Card</option>
+          </select>
+
+          <button type="submit">Place Order</button>
+        </form>
+
+        <div id="confirmationMessage"></div>
+      </section>
+    </div>
+
+    <!-- JS Files -->
+    <script src="User.js"></script>
+    <script src="AuthService.js"></script>
+    <script src="Product.js"></script>
+    <script src="ProductService.js"></script>
+
+    <script>
+      const authService = new AuthService();
+
+      function login() {
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+
+        const user = new User(username, password);
+
+        if (authService.login(user)) {
+          // ✅ SAVE LOGIN STATE
+          localStorage.setItem("user", username);
+
+          document.getElementById("loginView").classList.add("hidden");
+          document.getElementById("dashboardView").classList.remove("hidden");
+
+          document.getElementById("welcomeText").innerText =
+            "Welcome, " + username + " 👋";
+        } else {
+          const message = document.getElementById("message");
+          message.style.color = "red";
+          message.innerText = "Invalid credentials!";
+        }
+      }
+
+      function logout() {
+        localStorage.removeItem("user");
+
+        document.getElementById("dashboardView").classList.add("hidden");
+        document.getElementById("loginView").classList.remove("hidden");
+      }
+      const cartItems = [
+        { name: "Dash Cam A", price: 120, qty: 1 },
+        { name: "Dash Cam B", price: 180, qty: 2 },
+      ];
+
+      function renderCart() {
+        const cartContainer = document.getElementById("cartContainer");
+        const cartTotal = document.getElementById("cartTotal");
+
+        cartContainer.innerHTML = "";
+
+        let total = 0;
+
+        cartItems.forEach(function (item) {
+          const div = document.createElement("div");
+          div.classList.add("card");
+
+          div.innerHTML = `
+                <h3>${item.name}</h3>
+                <p>Price: $${item.price}</p>
+                <p>Quantity: ${item.qty}</p>
+            `;
+
+          cartContainer.appendChild(div);
+
+          total += item.price * item.qty;
+        });
+
+        cartTotal.innerText = "Total: $" + total;
+      }
+
+      document
+        .getElementById("viewCartBtn")
+        .addEventListener("click", function () {
+          document.getElementById("cartSection").classList.toggle("hidden");
+          renderCart();
+        });
+
+       document.getElementById("checkoutBtn").addEventListener("click", function () {
+         window.location.href = "Checkout.html";
+        });
+
+
+      document
+        .getElementById("checkoutForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          document.getElementById("confirmationMessage").innerText =
+            "Order placed successfully!";
+        });
+      function goToProducts() {
+        window.location.href = "addProduct.html";
+      }
+      window.onload = function () {
+        const user = localStorage.getItem("user");
+
+        if (user) {
+          document.getElementById("loginView").classList.add("hidden");
+          document.getElementById("dashboardView").classList.remove("hidden");
+
+          document.getElementById("welcomeText").innerText =
+            "Welcome, " + user + " 👋";
+        }
+      };
+      function showRegister() {
+    document.getElementById("loginView").classList.add("hidden");
+    document.getElementById("registerView").classList.remove("hidden");
+}
+
+    function showLogin() {
+        document.getElementById("registerView").classList.add("hidden");
+        document.getElementById("loginView").classList.remove("hidden");
+    }
+    function register() {
+    const username = document.getElementById("newUsername").value;
+    const password = document.getElementById("newPassword").value;
+
+    if (!username || !password) {
+        document.getElementById("registerMessage").innerText = "Fill all fields!";
+        return;
+    }
+
+ 
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    users.push({ username, password });
+
+    localStorage.setItem("users", JSON.stringify(users));
+
+    document.getElementById("registerMessage").innerText =
+        "Account created successfully! You can now login.";
+    }
+    function goToOrders() {
+    window.location.href = "orders.html";
+    }
+    function goToReports() {
+    window.location.href = "salesReport.html";
+    }
+    </script>
+  </body>
+</html>
