@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shop</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        button {
+            background: #38bdf8;
+            border: none;
+            padding: 8px;
+            margin-top: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0ea5e9;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2>🛍 Shop</h2>
+    <button onclick="goBack()">Back</button>
+</div>
+
+<div class="grid" id="productGrid"></div>
+
+<script>
+function loadProducts() {
+
+
+    let products = JSON.parse(localStorage.getItem("products"));
+
+    if (!products) {
+        products = [
+            { name: "Dashcam A", price: 120, stock: 5 },
+            { name: "Dashcam B", price: 180, stock: 3 },
+            { name: "Dashcam C", price: 200, stock: 2 }
+        ];
+    }
+
+    const grid = document.getElementById("productGrid");
+
+    products.forEach((product, index) => {
+
+        grid.innerHTML += `
+            <div class="card">
+                <h3>${product.name}</h3>
+                <p>Price: $${product.price}</p>
+                <p>Stock: ${product.stock}</p>
+
+                <button onclick="addToCart('${product.name}', ${product.price})">
+                    Add to Cart
+                </button>
+            </div>
+        `;
+    });
+}
+
+function addToCart(name, price) {
+
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    cart.push({
+        name: name,
+        price: price,
+        qty: 1
+    });
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    alert(name + " added to cart!");
+}
+
+function goBack() {
+    window.location.href = "index.html";
+}
+
+window.onload = loadProducts;
+</script>
+
+</body>
+</html>

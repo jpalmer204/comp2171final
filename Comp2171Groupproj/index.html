@@ -87,26 +87,29 @@
       <h3 id="welcomeText">Welcome 👋</h3>
 
       <div class="cards">
-        <div class="card">
+        <div class="card admin-only">
           <h3>📦 Inventory</h3>
           <button onclick="goToProducts()">Manage Products</button>
         </div>
 
-        <div class="card">
+       <div class="card admin-only">
           <h3>🛒 Orders</h3>
           <button onclick="goToOrders()">View Purchases</button>
         </div>
 
-        <div class="card">
+        <div class="card admin-only">
           <h3>📊 Reports</h3>
           <button onclick="goToReports()">View Sales Report</button>
+        </div>
+        <div class="card">
+          <h3>View Shop</h3>
+          <button onclick="goToShop()">See items</button>
         </div>
 
         <div class="card" id="viewCartBtn">
           <h3>🛒 Cart</h3>
           <p>View cart items</p>
         </div>
-      </div>
 
       <section id="cartSection" class="hidden">
         <h2>Cart</h2>
@@ -133,7 +136,9 @@
         </form>
 
         <div id="confirmationMessage"></div>
+        
       </section>
+      
     </div>
 
     <!-- JS Files -->
@@ -145,27 +150,45 @@
     <script>
       const authService = new AuthService();
 
-      function login() {
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
+    function login() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
 
-        const user = new User(username, password);
+      const user = new User(username, password);
 
-        if (authService.login(user)) {
-          // ✅ SAVE LOGIN STATE
-          localStorage.setItem("user", username);
+      let users = JSON.parse(localStorage.getItem("users")) || [];
 
-          document.getElementById("loginView").classList.add("hidden");
-          document.getElementById("dashboardView").classList.remove("hidden");
+      const foundUser = users.find(u =>
+        u.username === username && u.password === password
+      );
 
-          document.getElementById("welcomeText").innerText =
-            "Welcome, " + username + " 👋";
+      if (foundUser || authService.login(user)) {
+
+        localStorage.setItem("user", username);
+        if (username === "customer1") {
+          localStorage.setItem("role", "customer");
         } else {
-          const message = document.getElementById("message");
-          message.style.color = "red";
-          message.innerText = "Invalid credentials!";
+          localStorage.setItem("role", "admin");
         }
+
+        document.getElementById("loginView").classList.add("hidden");
+        document.getElementById("dashboardView").classList.remove("hidden");
+
+        document.getElementById("welcomeText").innerText =
+          "Welcome, " + username + " 👋";
+
+        if (username === "customer1") {
+          showCustomerView();
+        }else{
+          showAdminView();
+        }
+
+      } else {
+        const message = document.getElementById("message");
+        message.style.color = "red";
+        message.innerText = "Invalid credentials!";
       }
+    }
 
       function logout() {
         localStorage.removeItem("user");
@@ -229,13 +252,20 @@
       }
       window.onload = function () {
         const user = localStorage.getItem("user");
+        const role = localStorage.getItem("role");
 
-        if (user) {
-          document.getElementById("loginView").classList.add("hidden");
-          document.getElementById("dashboardView").classList.remove("hidden");
+        if (!user) return;
 
-          document.getElementById("welcomeText").innerText =
+        document.getElementById("loginView").classList.add("hidden");
+        document.getElementById("dashboardView").classList.remove("hidden");
+
+        document.getElementById("welcomeText").innerText =
             "Welcome, " + user + " 👋";
+
+        if (role === "customer") {
+            showCustomerView();
+        } else {
+            showAdminView(); 
         }
       };
       function showRegister() {
@@ -271,6 +301,20 @@
     }
     function goToReports() {
     window.location.href = "salesReport.html";
+    }
+    function showCustomerView() {
+    
+    document.querySelectorAll(".admin-only").forEach(el => {
+        el.style.display = "none";
+    });
+    }
+    function goToShop() {
+      window.location.href = "Shop.html";
+    }
+    function showAdminView() {
+      document.querySelectorAll(".admin-only").forEach(el => {
+          el.style.display = "block";
+      });
     }
     </script>
   </body>
